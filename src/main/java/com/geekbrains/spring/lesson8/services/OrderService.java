@@ -48,6 +48,7 @@ public class OrderService {
         return order;
     }
 
+    @Transactional
     public void remove(Long id) {
         orderRepository.deleteById(id);
     }

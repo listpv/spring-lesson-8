@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8"/>
     <title>Список заказов</title>
@@ -11,8 +11,8 @@
     <div th:replace="~{fragments/navigation :: navigation(Orders)}" />
     <h1>Список заказов</h1>
 
-    <h3>Фильтр</h3>
-    <form method="get" th:action="@{/admin/orders}">
+    <h3 sec:authorize="!hasAnyRole('MANAGER')">Фильтр</h3>
+    <form method="get" sec:authorize="!hasAnyRole('MANAGER')" th:action="@{/admin/orders}">
         <div class="form-group col-md-6">
             <label for="customerNameInput">Имя клиента</label>
             <input class="form-control" th:value="${param.customerName != null ? param.customerName : null}" name="customerName" type="text" id="customerNameInput">
@@ -47,7 +47,7 @@
             <td th:text="${o.user.name}"/>
             <td th:text="${o.totalPrice}"/>
             <td>
-                <a class="btn btn-danger" th:href="@{'/orders/remove/' + ${o.id}}">Удалить</a>
+                <a class="btn btn-danger" sec:authorize="!hasAnyRole('MANAGER')" th:href="@{'/orders/remove/' + ${o.id}}">Удалить</a>
             </td>
         </tr>
         </tbody>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -57,9 +57,10 @@
                                 <h5 th:text="#{text.products.price(${product.price})}"></h5>
                                 <p class="card-text" th:text="${product.brandName}"></p>
                             </div>
-                            <div class="card-footer">
+                            <div class="card-footer" sec:authorize="!hasAnyRole('MANAGER')">
                                 <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
                                 <a class="btn btn-success" th:href="@{'/cart/add/' + ${product.id}}">В корзину</a>
+
                             </div>
                         </div>
                     </div>

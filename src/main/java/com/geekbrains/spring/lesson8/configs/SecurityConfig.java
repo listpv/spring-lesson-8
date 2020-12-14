@@ -18,7 +18,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.sql.DataSource;
 
-@EnableWebSecurity//(debug = true)
+@EnableWebSecurity(debug = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private UserService userService;
@@ -32,7 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                .antMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "MANAGER")
+                .antMatchers("/sadmin_registration**").hasRole("SUPER_ADMIN")
                 .antMatchers("/cart/createOrder**").authenticated()
                 .antMatchers("/registration**").anonymous()
                 .anyRequest().permitAll()
@@ -48,6 +49,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    @Bean
 //    public UserDetailsService userDetailsService() {
 //
+//        UserDetails localManager = User.builder()
+//                .username("manager")
+//                .password("{bcrypt}$2y$12$UUZsNpdv7iDXrhFab/LsmeNoMYmhlpzOd5lOdBXyKrhcbJfMIVGyO")
+//                .roles("MANAGER")
+//                .build();
+//
 //        UserDetails user = User.builder()
 //                .username("user")
 //                .password("{noop}11")
@@ -56,21 +63,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //
 //        UserDetails admin = User.builder()
 //                .username("admin")
-//                .password("{bcrypt}$2y$12$kppL/79H63sx3NoXlZhY/uDW2EiB18ByX8YeENyFwyxAnHjrCT4pK")
+//                .password("{bcrypt}$2y$12$UUZsNpdv7iDXrhFab/LsmeNoMYmhlpzOd5lOdBXyKrhcbJfMIVGyO")
 //                .roles("USER", "ADMIN")
 //                .build();
 //
 //        UserDetails sa = User.builder()
 //                .username("sa")
-//                .password("{bcrypt}$2y$12$kppL/79H63sx3NoXlZhY/uDW2EiB18ByX8YeENyFwyxAnHjrCT4pK")
+//                .password("{bcrypt}$2y$12$UUZsNpdv7iDXrhFab/LsmeNoMYmhlpzOd5lOdBXyKrhcbJfMIVGyO")
 //                .roles("USER", "ADMIN", "SUPER_ADMIN")
 //                .build();
 //
-//        return new InMemoryUserDetailsManager(user, admin, sa);
+//        return new InMemoryUserDetailsManager( user, localManager, admin, sa);
 //    }
 
 //    @Bean
 //    public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
+//
+//        UserDetails localManager = User.builder()
+//                .username("manager")
+//                .password("{bcrypt}$2y$12$UUZsNpdv7iDXrhFab/LsmeNoMYmhlpzOd5lOdBXyKrhcbJfMIVGyO")
+//                .authorities("ROLE_MANAGER")
+//                .build();
 //
 //        UserDetails user = User.builder()
 //                .username("user")
@@ -80,18 +93,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //
 //        UserDetails admin = User.builder()
 //                .username("admin")
-//                .password("{bcrypt}$2y$12$kppL/79H63sx3NoXlZhY/uDW2EiB18ByX8YeENyFwyxAnHjrCT4pK")
+//                .password("{bcrypt}$2y$12$UUZsNpdv7iDXrhFab/LsmeNoMYmhlpzOd5lOdBXyKrhcbJfMIVGyO")
 //                .authorities("ROLE_USER", "ROLE_ADMIN")
 //                .build();
 //
 //        UserDetails sa = User.builder()
 //                .username("sa")
-//                .password("{bcrypt}$2y$12$kppL/79H63sx3NoXlZhY/uDW2EiB18ByX8YeENyFwyxAnHjrCT4pK")
+//                .password("{bcrypt}$2y$12$UUZsNpdv7iDXrhFab/LsmeNoMYmhlpzOd5lOdBXyKrhcbJfMIVGyO")
 //                .authorities("ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER_ADMIN")
 //                .build();
 //
 //        JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
 //
+//        if(!manager.userExists(localManager.getUsername())){
+//            manager.createUser(localManager);
+//        }
 //        if(!manager.userExists(user.getUsername())){
 //            manager.createUser(user);
 //        }

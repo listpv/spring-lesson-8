@@ -2,6 +2,7 @@ package com.geekbrains.spring.lesson8.services;
 
 
 import com.geekbrains.spring.lesson8.data.UserData;
+import com.geekbrains.spring.lesson8.data.UserSadminData;
 import com.geekbrains.spring.lesson8.entities.Role;
 import com.geekbrains.spring.lesson8.entities.User;
 import com.geekbrains.spring.lesson8.repositories.UserRepository;
@@ -27,10 +28,20 @@ public class UserService implements UserDetailsService {
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
+    private RoleService roleService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+//    public UserService(UserRepository userRepository
+//            , PasswordEncoder passwordEncoder
+//    ) {
+//        this.userRepository = userRepository;
+//        this.passwordEncoder = passwordEncoder;
+//    }
+
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
     }
 
     public User findByUsername(String username) {
@@ -58,6 +69,22 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    public User createUser(UserSadminData userSadminData){
+        User user = new User();
+        user.setName(userSadminData.getName());
+        user.setUsername(userSadminData.getUsername());
+        user.setPassword(passwordEncoder.encode(userSadminData.getPassword()));
+        if(userSadminData.getRoles() != null) {
+            for (String o : userSadminData.getRoles()) {
+                Role role = roleService.findRoleByName(o);
+                user.getRoles().add(role);
+            }
+        }
+        user.setEmail(userSadminData.getEmail());
+        user.setPhone(userSadminData.getPhone());
+        return userRepository.save(user);
+    }
+
     public void authenticateUser(User user){
         List<Role> roles = user.getRoles().stream().distinct().collect(Collectors.toList());
         List<GrantedAuthority> authorities = roles.stream()
@@ -79,5 +106,9 @@ public class UserService implements UserDetailsService {
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+    }
+
+    public List<User> findAll(){
+        return userRepository.findAll();
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         productRepository.deleteById(id);
     }
@@ -31,14 +33,17 @@ public class ProductService {
         return productRepository.findAll(spec, PageRequest.of(page, size));
     }
 
+    @Transactional
     public Product addProduct(Product product) {
         return productRepository.save(product);
     }
 
+    @Transactional
     public Product saveOrUpdate(Product product) {
         return productRepository.save(product);
     }
 
+    @Transactional
     public Product update(Product product) {
         productRepository.save(product);
         return productRepository.getOne(product.getId());
@@ -53,6 +58,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    @Transactional
     public void remove(Long id) {
         productRepository.deleteById(id);
     }
