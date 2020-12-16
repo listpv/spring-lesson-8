@@ -12,6 +12,7 @@ import com.geekbrains.spring.lesson8.utils.ProductFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@EnableGlobalMethodSecurity(securedEnabled = true)
 @RequestMapping("/admin")
 public class AdminController {
 
@@ -35,7 +37,6 @@ public class AdminController {
         this.userService = userService;
     }
 
-    @Secured({"ROLE_ADMIN"})
     @GetMapping("/products")
     public String showAllProducts(Model model,
                                   @RequestParam(defaultValue = "1", name = "p") Integer page,
@@ -51,6 +52,7 @@ public class AdminController {
         return "products";
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @GetMapping("/add")
     public String addProduct(
             Model model
@@ -59,6 +61,7 @@ public class AdminController {
         return "product_add_form";
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @PostMapping("/add")
     public String addProduct(
             @Valid @ModelAttribute Product product,
@@ -72,6 +75,7 @@ public class AdminController {
     }
 
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Product p = productService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product with id: " + id + " doesn't exists (for edit)"));
@@ -80,6 +84,7 @@ public class AdminController {
     }
 
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @PostMapping("/edit")
     public String showEditForm(@ModelAttribute Product product) {
         productService.saveOrUpdate(product);
@@ -87,6 +92,7 @@ public class AdminController {
     }
 
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @GetMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -108,6 +114,7 @@ public class AdminController {
     }
 
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @GetMapping("/orders/remove/{id}")
     public String remove(
             @PathVariable("id") Long id,
@@ -117,6 +124,7 @@ public class AdminController {
         return "redirect:/orders";
     }
 
+//    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @GetMapping("/users")
     public String users(
             Model model
