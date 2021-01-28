@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8"/>
     <title>Каталог товаров</title>
@@ -10,8 +10,8 @@
 <div class="container">
     <div th:replace="~{fragments/navigation :: navigation(Products)}" />
     <h1>Каталог товаров</h1>
-    <h3>Фильтр</h3>
-    <form method="get" th:action="@{/admin/products}">
+    <h3 sec:authorize="!hasAnyRole('MANAGER')">Фильтр</h3>
+    <form method="get" sec:authorize="!hasAnyRole('MANAGER')" th:action="@{/admin/products}">
         <div class="form-group col-md-6">
             <label for="titleInput">Название</label>
             <input class="form-control" th:value="${param.title != null ? param.title : null}" name="title" type="text" id="titleInput">
@@ -27,7 +27,8 @@
 
         <button class="btn btn-primary" type="submit">Применить</button>
         <a class="btn btn-primary" th:href="@{/admin/products}">Очистить фильтр</a>
-        <a class="btn btn-primary" th:href="@{/admin/products/add}">Добавить новый товар</a>
+<!--        <a class="btn btn-primary" th:href="@{/admin/products/add}">Добавить новый товар</a>-->
+        <a class="btn btn-primary" th:href="@{/admin/add}">Добавить новый товар</a>
     </form>
 
     <br>
@@ -56,8 +57,8 @@
             <td th:text="${{p.createDate}}"/>
             <td th:text="${{p.modifyDate}}"/>
             <td>
-                <a class="btn btn-success" th:href="@{'/cart/add/' + ${p.id}}">В корзину</a>
-                <a class="btn btn-danger" th:href="@{'/products/edit/' + ${p.id}}">Изменить</a>
+                <a class="btn btn-success" sec:authorize="!hasAnyRole('MANAGER')" th:href="@{'/cart/add/' + ${p.id}}">В корзину</a>
+                <a class="btn btn-danger" sec:authorize="!hasAnyRole('MANAGER')" th:href="@{'/products/edit/' + ${p.id}}">Изменить</a>
             </td>
         </tr>
         </tbody>
@@ -67,17 +68,17 @@
         <ul class="pagination">
             <li class="page-item" th:classappend="${products.isFirst() ? 'disabled' : ''}">
                 <a class="page-link"
-                   th:href="@{'/products?p=' + ${products.previousOrFirstPageable().getPageNumber() + 1} + ${filterDefinition}}">Назад</a>
+                   th:href="@{'?p=' + ${products.previousOrFirstPageable().getPageNumber() + 1} + ${filterDefinition}}">Назад</a>
             </li>
 
             <li class="page-item" th:classappend="${products.getNumber() + 1 == i ? 'active' : ''}"
                 th:each="i : ${#numbers.sequence(1, products.getTotalPages())}">
-                <a class="page-link" th:text="${i}" th:href="@{'/products?p=' + ${i} + ${filterDefinition}}"></a>
+                <a class="page-link" th:text="${i}" th:href="@{'?p=' + ${i} + ${filterDefinition}}"></a>
             </li>
 
             <li class="page-item"  th:classappend="${products.isLast() ? 'disabled' : ''}">
                 <a class="page-link"
-                   th:href="@{'/products?p='+ ${products.nextOrLastPageable().getPageNumber() + 1} + ${filterDefinition}}">Вперед</a>
+                   th:href="@{'?p='+ ${products.nextOrLastPageable().getPageNumber() + 1} + ${filterDefinition}}">Вперед</a>
             </li>
         </ul>
     </nav>

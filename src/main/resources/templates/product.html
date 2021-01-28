@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -44,7 +44,7 @@
                                 Sed porttitor pretium venenatis. Suspendisse potenti. Aliquam quis ligula elit. Aliquam at orci ac neque semper dictum. Sed tincidunt scelerisque ligula, et facilisis nulla hendrerit non. Suspendisse potenti. Pellentesque non accumsan orci.
                             </p>
                             <p>
-                                <a class="btn btn-success" th:href="@{'/cart/add/' + ${product.id}}">В корзину</a>
+                                <a class="btn btn-success" sec:authorize="!hasAnyRole('MANAGER')" th:href="@{'/cart/add/' + ${product.id}}">В корзину</a>
                             </p>
                         </div>
                     </div>

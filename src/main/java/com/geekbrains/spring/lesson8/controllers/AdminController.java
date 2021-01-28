@@ -2,14 +2,17 @@ package com.geekbrains.spring.lesson8.controllers;
 
 import com.geekbrains.spring.lesson8.entities.Order;
 import com.geekbrains.spring.lesson8.entities.Product;
+import com.geekbrains.spring.lesson8.entities.User;
 import com.geekbrains.spring.lesson8.exceptions.ResourceNotFoundException;
 import com.geekbrains.spring.lesson8.services.OrderService;
 import com.geekbrains.spring.lesson8.services.ProductService;
+import com.geekbrains.spring.lesson8.services.UserService;
 import com.geekbrains.spring.lesson8.utils.OrderFilter;
 import com.geekbrains.spring.lesson8.utils.ProductFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,20 +22,21 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
-
 @Controller
+@EnableGlobalMethodSecurity(securedEnabled = true)
 @RequestMapping("/admin")
 public class AdminController {
 
     private ProductService productService;
     private OrderService orderService;
+    private UserService userService;
 
-    public AdminController(ProductService productService, OrderService orderService) {
+    public AdminController(ProductService productService, OrderService orderService, UserService userService) {
         this.productService = productService;
         this.orderService = orderService;
+        this.userService = userService;
     }
 
-    @Secured({"ROLE_ADMIN"})
     @GetMapping("/products")
     public String showAllProducts(Model model,
                                   @RequestParam(defaultValue = "1", name = "p") Integer page,
@@ -48,6 +52,7 @@ public class AdminController {
         return "products";
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @GetMapping("/add")
     public String addProduct(
             Model model
@@ -56,6 +61,7 @@ public class AdminController {
         return "product_add_form";
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @PostMapping("/add")
     public String addProduct(
             @Valid @ModelAttribute Product product,
@@ -69,6 +75,7 @@ public class AdminController {
     }
 
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Product p = productService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product with id: " + id + " doesn't exists (for edit)"));
@@ -77,6 +84,7 @@ public class AdminController {
     }
 
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @PostMapping("/edit")
     public String showEditForm(@ModelAttribute Product product) {
         productService.saveOrUpdate(product);
@@ -84,6 +92,7 @@ public class AdminController {
     }
 
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @GetMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -105,6 +114,7 @@ public class AdminController {
     }
 
 
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     @GetMapping("/orders/remove/{id}")
     public String remove(
             @PathVariable("id") Long id,
@@ -112,5 +122,15 @@ public class AdminController {
     ) {
         orderService.remove(id);
         return "redirect:/orders";
+    }
+
+//    @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
+    @GetMapping("/users")
+    public String users(
+            Model model
+    ) {
+        List<User> users = userService.findAll();
+        model.addAttribute("users", users);
+        return "users";
     }
 }

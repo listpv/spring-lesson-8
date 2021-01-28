@@ -4,6 +4,7 @@ import com.geekbrains.spring.lesson8.services.CategoryService;
 import com.geekbrains.spring.lesson8.services.ProductService;
 import com.geekbrains.spring.lesson8.services.UserService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -33,9 +34,15 @@ public class HomepageController {
     public String main(
             @RequestParam(name = "p", required = false, defaultValue = "0") Integer page,
             @RequestParam(name = "s", required = false, defaultValue = "6") Integer size,
-            Model model,
-            Principal principal
+            Model model
+//            , Principal principal
     ){
+
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        System.out.println("authentication user = " + authentication.getName());
+//        System.out.println("principal = " + principal);
+//        System.out.println("principal per name = " + userService.getCurrentUser().getName());
+
         page = page > 0 ? page - 1 : page;
         model.addAttribute("products", productService.findAll(null, page, size));
         model.addAttribute("categories", categoryService.findAll());
